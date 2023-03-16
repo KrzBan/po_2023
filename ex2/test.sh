@@ -1,0 +1,1 @@
+curl -L localhost:8000/product
