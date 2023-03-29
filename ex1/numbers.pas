@@ -1,6 +1,6 @@
 PROGRAM Numbers;
 
-procedure printArray(var a: array of integer; aLen: integer);
+procedure printArray(var a: array of integer; aLen: Word);
 var
    i: integer;
 begin
@@ -10,7 +10,7 @@ begin
     end;
 end;
 
-procedure generate(var a: array of integer; aLen, min, max: Word);
+procedure generate(var a: array of integer; aLen: Integer; min, max: Word);
 var
    i: integer;
 begin

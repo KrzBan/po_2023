@@ -16,63 +16,62 @@ class ProductController extends AbstractController
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(ProductRepository $productRepository): Response
     {
+        $products = $productRepository->findAll();
+        $productsArray = [];
+
+        foreach($products as $product){
+            $productsArray[] = [
+                'id' => $product->getId(),
+                'name' => $product->getName(),
+                'price' => $product->getPrice()
+            ];
+        }
+
+        return $this->json($productsArray);
+
         return $this->render('product/index.html.twig', [
             'products' => $productRepository->findAll(),
         ]);
     }
 
-    #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_product_new', methods: ['POST'])]
     public function new(Request $request, ProductRepository $productRepository): Response
     {
+        $fields = json_decode($request->getContent(), true);
+
         $product = new Product();
-        $form = $this->createForm(ProductType::class, $product);
-        $form->handleRequest($request);
+        $product->setName($fields['name']);
+        $product->setPrice($fields['price']);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $productRepository->save($product, true);
+        $productRepository->save($product, true);
 
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('product/new.html.twig', [
-            'product' => $product,
-            'form' => $form,
-        ]);
+        return $this->json($product);
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
     public function show(Product $product): Response
     {
-        return $this->render('product/show.html.twig', [
-            'product' => $product,
-        ]);
+        return $this->json($product);
     }
 
-    #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_product_edit', methods: ['POST'])]
     public function edit(Request $request, Product $product, ProductRepository $productRepository): Response
     {
-        $form = $this->createForm(ProductType::class, $product);
-        $form->handleRequest($request);
+        $fields = json_decode($request->getContent(), true);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $productRepository->save($product, true);
+        $product->setName($fields['name']);
+        $product->setPrice($fields['price']);
 
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
-        }
+        $productRepository->save($product, true);
 
-        return $this->renderForm('product/edit.html.twig', [
-            'product' => $product,
-            'form' => $form,
-        ]);
+        return $this->json($product);
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
     public function delete(Request $request, Product $product, ProductRepository $productRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
-            $productRepository->remove($product, true);
-        }
-
-        return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+        $productRepository->remove($product, true);
+       
+        return $this->json($product);
     }
 }

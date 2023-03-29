@@ -16,63 +16,58 @@ class UserController extends AbstractController
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
-        ]);
+        $users = $userRepository->findAll();
+        $usersArray = [];
+
+        foreach($users as $user){
+            $usersArray[] = [
+                'id' => $user->getId(),
+                'name' => $user->getFirstName(),
+                'price' => $user->getLasttName()
+            ];
+        }
+
+        return $this->json($usersArray);
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, UserRepository $userRepository): Response
     {
+        $fields = json_decode($request->getContent(), true);
+
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+        $user->setFirstName($fields['firstName']);
+        $user->setLasttName($fields['lastName']);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->save($user, true);
+        $userRepository->save($user, true);
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+        return $this->json($user);
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
-        ]);
+        return $this->json($user);
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, UserRepository $userRepository): Response
     {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+        $fields = json_decode($request->getContent(), true);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->save($user, true);
+        $user->setFirstName($fields['firstName']);
+        $user->setLasttName($fields['lastName']);
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
+        $userRepository->save($user, true);
 
-        return $this->renderForm('user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+        return $this->json($user);
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
-            $userRepository->remove($user, true);
-        }
-
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        $userRepository->remove($user, true);
+       
+        return $this->json($user);
     }
 }
