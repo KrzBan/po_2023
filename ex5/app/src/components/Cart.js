@@ -1,7 +1,7 @@
 
 import Product from "./Product";
 import Payment from "./Payment";
-import { useState } from "react";
+import { React, useState } from "react";
 
 export default function Cart() {
 
