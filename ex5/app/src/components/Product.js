@@ -1,18 +1,14 @@
-import Server from "./Server";
 import { React } from "react";
 import PropTypes from "prop-types"
 
-export default function Product({id, addCartValue}) {
-    const info = Server.GetProductInfo(id);
-
-    addCartValue(info.price);
+export default function Product({name, price, availability}) {
 
     return (
         <div>
             <p>I{"'"}m a product!</p>
-            <p>Name: {info.name}</p>
-            <p>Price: {info.price}</p>
-            <p>In stock: {info.availability}</p>
+            <p>Name: {name}</p>
+            <p>Price: {price}</p>
+            <p>In stock: {availability}</p>
         </div>
       
     );
@@ -20,5 +16,7 @@ export default function Product({id, addCartValue}) {
 
 Product.propTypes = {
     id: PropTypes.number.isRequired,
-    addCartValue: PropTypes.func.isRequired
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    availability: PropTypes.number.isRequired,
   }
