@@ -1,3 +1,6 @@
+Aplikacja dostępna pod:
+https://pofrontend2023.azurewebsites.net/
+
 docker build --tag 'cloud_back' .
 docker run -p 5000:5000 'cloud_back'
 
